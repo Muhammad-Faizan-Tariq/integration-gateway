@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum JobStatus {
+  SUBMITTED
+  PROCESSING
+  COMPLETED
+  FAILED
+  WEBHOOK_FAILED
+}
+
+enum DeliveryStatus {
+  SUCCESS
+  FAILED
+}
+
+model Partner {
+  id             String           @id @default(cuid())
+  name           String
+  keyPrefix      String           @unique
+  apiKeyHash     String           @unique
+  webhookSecret  String
+  createdAt      DateTime         @default(now())
+  jobs           Job[]
+  idempotencyKeys IdempotencyKey[]
+}
+
+model Job {
+  id               String            @id @default(cuid())
+  partnerId        String
+  partner          Partner           @relation(fields: [partnerId], references: [id])
+  customerId       String
+  caseType         String
+  callbackUrl      String
+  status           JobStatus         @default(SUBMITTED)
+  metadata         Json?
+  reportStorageKey String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  attachments      Attachment[]
+  webhookDeliveries WebhookDelivery[]
+  idempotencyKey   IdempotencyKey?
+}
+
+model Attachment {
+  id         String   @id @default(cuid())
+  jobId      String
+  job        Job      @relation(fields: [jobId], references: [id])
+  fileName   String
+  mimeType   String
+  size       Int
+  storageKey String
+  createdAt  DateTime @default(now())
+}
+
+model IdempotencyKey {
+  id        String   @id @default(cuid())
+  partnerId String
+  partner   Partner  @relation(fields: [partnerId], references: [id])
+  key       String
+  jobId     String   @unique
+  job       Job      @relation(fields: [jobId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([partnerId, key])
+}
+
+model WebhookDelivery {
+  id            String         @id @default(cuid())
+  jobId         String
+  job           Job            @relation(fields: [jobId], references: [id])
+  attempt       Int
+  status        DeliveryStatus
+  responseCode  Int?
+  errorMessage  String?
+  createdAt     DateTime       @default(now())
+}
