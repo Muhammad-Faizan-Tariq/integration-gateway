@@ -1,11 +1,22 @@
 import type { JobStatus } from '../../types/api';
+import { Badge } from './badge';
 
-const STATUS_STYLES: Record<JobStatus, string> = {
-  SUBMITTED: 'bg-gray-100 text-gray-700',
-  PROCESSING: 'bg-blue-100 text-blue-700',
-  COMPLETED: 'bg-green-100 text-green-700',
-  FAILED: 'bg-red-100 text-red-700',
-  WEBHOOK_FAILED: 'bg-orange-100 text-orange-700',
+type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning' | 'blue' | 'live';
+
+const STATUS_VARIANT: Record<JobStatus, BadgeVariant> = {
+  SUBMITTED: 'default',
+  PROCESSING: 'blue',
+  COMPLETED: 'success',
+  FAILED: 'destructive',
+  WEBHOOK_FAILED: 'warning',
+};
+
+const STATUS_LABEL: Record<JobStatus, string> = {
+  SUBMITTED: 'Submitted',
+  PROCESSING: 'Processing',
+  COMPLETED: 'Completed',
+  FAILED: 'Failed',
+  WEBHOOK_FAILED: 'Webhook Failed',
 };
 
 interface Props {
@@ -13,12 +24,13 @@ interface Props {
 }
 
 export function JobStatusBadge({ status }: Props) {
+  const isInFlight = status === 'SUBMITTED' || status === 'PROCESSING';
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[status]}`}>
-      {(status === 'SUBMITTED' || status === 'PROCESSING') && (
+    <Badge variant={STATUS_VARIANT[status]}>
+      {isInFlight && (
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
       )}
-      {status.replace('_', ' ')}
-    </span>
+      {STATUS_LABEL[status]}
+    </Badge>
   );
 }

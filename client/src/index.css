@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+/* Class-based dark mode: dark: utilities apply inside .dark ancestor */
+@variant dark (&:is(.dark *));
+
+@layer base {
+  :root {
+    --radius: 0.25rem;
+  }
+
+  body {
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+}

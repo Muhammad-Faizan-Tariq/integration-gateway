@@ -11,9 +11,9 @@ export async function getJob(id: string): Promise<Job> {
   return data;
 }
 
-export async function createJob(formData: FormData): Promise<Job> {
+export async function createJob(formData: FormData, extraHeaders: Record<string, string> = {}): Promise<Job> {
   const { data } = await apiClient.post<Job>('/jobs', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: { 'Content-Type': 'multipart/form-data', ...extraHeaders },
   });
   return data;
 }
