@@ -15,10 +15,11 @@ export class StorageService implements OnModuleInit {
     this.bucket = this.config.get<string>('MINIO_BUCKET', 'integration-gateway');
     this.publicEndpoint = this.config.get<string>('MINIO_PUBLIC_ENDPOINT', 'localhost:9000');
 
+    const useSSL = this.config.get<string>('MINIO_USE_SSL', 'false') === 'true';
     this.client = new Minio.Client({
       endPoint: this.config.get<string>('MINIO_ENDPOINT', 'localhost'),
       port: parseInt(this.config.get<string>('MINIO_PORT', '9000'), 10),
-      useSSL: false,
+      useSSL,
       accessKey: this.config.get<string>('MINIO_ACCESS_KEY', 'minioadmin'),
       secretKey: this.config.get<string>('MINIO_SECRET_KEY', 'minioadmin'),
     });

@@ -11,7 +11,9 @@ export function setApiKey(key: string) {
 }
 
 const apiClient = axios.create({
-  baseURL: '/v1',
+  // In dev: '/v1' is proxied by Vite to VITE_API_TARGET (localhost:3001)
+  // In production: set VITE_API_BASE_URL=https://your-backend.railway.app/v1
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/v1',
   headers: { 'Content-Type': 'application/json' },
 });
 
