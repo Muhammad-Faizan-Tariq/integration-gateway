@@ -4,7 +4,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     ports:
-      - "3001:3001"
+      - "3005:3001"
     env_file:
       - ./server/.env
 
@@ -13,7 +13,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - "80:5173"
+      - "3004:5173"
     environment:
       VITE_API_TARGET: http://backend:3001
       VITE_API_KEY: ${VITE_API_KEY}
